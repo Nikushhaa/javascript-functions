@@ -1,194 +1,570 @@
-const canvas = document.getElementById("myCanvas"); 
+// canvas html elementis gamotana
+const canvas = document.getElementById("myCanvas");
+
+// canvasis 2D contextis ageba
 const ctx = canvas.getContext("2d");
 
-let isNight = false; // day/night mode
+
+// dila-gamis mdgomareoba
+let isNight = false;
 
 
-// background
-function drawBackground() { // fonis daxatvis funqcia
 
-  // day sky
+// fonis daxatvis funqcia
+function drawBackground() {
+
+  // tu dila aris
   if (isNight == false) {
-    ctx.fillStyle = "#87ceeb"; // cis feri
+
+    // cis feri
+    ctx.fillStyle = "#87ceeb";
   }
-//aq tu game araa magshemtxvevashi cisferia anu dilaa tu gamea shavia
-  // night sky
+
+  // tu game aris
   else {
-    ctx.fillStyle = "#0b0f2a"; // gamis cis feri
+
+    // gamecis feri
+    ctx.fillStyle = "#0b0f2a";
   }
 
-  ctx.fillRect(0, 0, canvas.width, canvas.height); //mtliani cis dafarva
+  // cis daxatva
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
-  ctx.fillStyle = "green"; // balaxis feri
-  ctx.fillRect(0, canvas.height * 0.76, canvas.width, canvas.height * 0.24); //balaxis daxatva qvemot
 
-  // stars
+  // balaxis feri
+  ctx.fillStyle = "green";
+
+  // balaxis daxatva
+  ctx.fillRect(
+    0,
+    canvas.height * 0.76,
+    canvas.width,
+    canvas.height * 0.24
+  );
+
+
+  // tu game aris
   if (isNight == true) {
+
+    // varskvlavebis daxatva
     drawStars();
   }
 }
 
 
-// stars
-function drawStars() { // varskvlavebis daxatva
 
+// varskvlavebis funqcia
+function drawStars() {
+
+  // loop varskvlavebistvis
   for (let i = 0; i < 80; i++) {
 
-    const x = Math.random() * canvas.width; // random horizontali
-    const y = Math.random() * 300; // random vertikali
+    // random x koordinata
+    const x =
+      Math.random() * canvas.width;
 
-    const size = Math.random() * 3; // random zomma
+    // random y koordinata
+    const y =
+      Math.random() * 300;
 
-    ctx.beginPath(); // axali figura
-    ctx.arc(x, y, size, 0, Math.PI * 2); // varskvlavi
+    // random zomis sheqmna
+    const size =
+      Math.random() * 3;
 
-    ctx.fillStyle = "white"; // varskvlavis feri
-    ctx.fill(); // shevseba
+
+    // axali pathis dawyeba
+    ctx.beginPath();
+
+    // wreis daxatva
+    ctx.arc(
+      x,
+      y,
+      size,
+      0,
+      Math.PI * 2
+    );
+
+    // varskvlavis feri
+    ctx.fillStyle = "white";
+
+    // varskvlavis shevseba
+    ctx.fill();
   }
 }
 
 
-// ray layer function
-function drawRayLayer(x, y, startDistance, endDistance, color, width) {
 
-  ctx.strokeStyle = color; // sxivis feri
-  ctx.lineWidth = width; // sisqe
+// mzis monacemebi
+const sunObj = {
 
-  for (let angle = 0; angle < 360; angle += 45) {
+  // mzis x koordinata
+  x: 300,
 
-    ctx.beginPath(); // axali xazi
+  // mzis y koordinata
+  y: 200,
 
-    // sawyisi wertili
-    ctx.moveTo(
-      x + Math.cos(angle * Math.PI / 180) * startDistance,
-      y + Math.sin(angle * Math.PI / 180) * startDistance
-    );
+  // mzis radiusi
+  sunRadius: 40,
 
-    // saboloo wertili
-    ctx.lineTo(
-      x + Math.cos(angle * Math.PI / 180) * endDistance,
-      y + Math.sin(angle * Math.PI / 180) * endDistance
-    );
-
-    ctx.stroke(); // daxatva
-  }
-}
-
-// SUN
-function drawSun(x, y) { // mzis daxatva
-
-  ctx.beginPath(); // axali figuris dawyeba
-  ctx.arc(x, y, 50, 0, Math.PI * 2); //mzis daxatva
-  ctx.fillStyle = "yellow"; //mzis feri
-  ctx.fill(); // shevseba
-
-  // pirveli fenis sxivebi
-  drawRayLayer(x, y, 65, 90, "#ff8c00", 2);
-
-  // meore fenis sxivebi
-  drawRayLayer(x, y, 95, 120, "#ffb347", 3);
-
-  // mesame fenis sxivebi
-  drawRayLayer(x, y, 125, 150, "#fff176", 3);
-}
+  // mzis feri
+  sunColor: "yellow",
 
 
-// moon
-function drawMoon(x, y) { // mtvaris daxatva
+  // sxivebis array
+  rays: [
 
-  ctx.beginPath(); // axali figura
-  ctx.arc(x, y, 45, 0, Math.PI * 2); // mtvare
+    // pirveli shre
+    {
+      innerRadius: 50,
+      outerRadius: 70,
 
-  ctx.fillStyle = "#c0c0c0"; // mtvaris feri
-  ctx.fill(); // shevseba
+      color: "orange",
 
-  // mtvaris ლაქები
+      width: 2,
+
+      angleOffset: 0
+    },
+
+
+    // meore shre
+    {
+      innerRadius: 55,
+      outerRadius: 90,
+
+      color: "gold",
+
+      width: 2,
+
+      angleOffset: 15
+    },
+
+
+    // mesame shre
+    {
+      innerRadius: 65,
+      outerRadius: 100, //sxivebis sidide
+
+      color: "yellow",
+
+      width: 2,
+
+      angleOffset: 30
+    }
+  ]
+};
+
+
+
+// mzis daxatvis funqcia
+function drawSun(data) {
+
+  // axali pathis dawyeba
   ctx.beginPath();
 
-  ctx.arc(x - 10, y - 5, 8, 0, Math.PI * 2);
-  ctx.arc(x + 15, y + 10, 6, 0, Math.PI * 2);
+  // mzis wris daxatva
+  ctx.arc(
+    data.x,
+    data.y,
+    data.sunRadius,
+    0,
+    Math.PI * 2
+  );
 
-  ctx.fillStyle = "#999";
+  // mzis feris minicheba
+  ctx.fillStyle = data.sunColor;
+
+  // mzis shevseba
+  ctx.fill();
+
+
+  // sxivebis loop
+  for (
+    let i = 0;
+    i < data.rays.length;
+    i++
+  ) {
+
+    // current sxivis monacemebi
+    let rayData = data.rays[i];
+
+
+    // sxivis daxatva
+    drawRayLayer({
+
+      // mzis x koordinata
+      x: data.x,
+
+      // mzis y koordinata
+      y: data.y,
+
+      // sawyisi radiusi
+      innerRadius: rayData.innerRadius,
+
+      // saboloo radiusi
+      outerRadius: rayData.outerRadius,
+
+      // sxivis feri
+      color: rayData.color,
+
+      // sxivis sisqe
+      width: rayData.width,
+
+      // kutxis gadatana
+      angleOffset: rayData.angleOffset
+    });
+  }
+}
+
+
+
+// sxivebis daxatvis funqcia
+function drawRayLayer(data) {
+
+  // sxivis feri
+  ctx.strokeStyle = data.color;
+
+  // sxivis sisqe
+  ctx.lineWidth = data.width;
+
+
+  // kutxeebis loop
+  for (
+    let angle = 0;
+    angle < 360;
+    angle += 45
+  ) {
+
+    // saboloo kutxis gamotvla
+    let finalAngle =
+      angle + data.angleOffset;
+
+
+    // radianebshi gadayvana
+    let rad =
+      finalAngle * Math.PI / 180;
+
+
+    // sawyisi x koordinata
+    let x1 =
+      data.x +
+      Math.cos(rad) *
+      data.innerRadius;
+
+
+    // sawyisi y koordinata
+    let y1 =
+      data.y +
+      Math.sin(rad) *
+      data.innerRadius;
+
+
+    // saboloo x koordinata
+    let x2 =
+      data.x +
+      Math.cos(rad) *
+      data.outerRadius;
+
+
+    // saboloo y koordinata
+    let y2 =
+      data.y +
+      Math.sin(rad) *
+      data.outerRadius;
+
+
+    // axali pathis dawyeba
+    ctx.beginPath();
+
+    // sawyis wertilze gadasvla
+    ctx.moveTo(x1, y1);
+
+    // xazis gavleba
+    ctx.lineTo(x2, y2);
+
+    // xazis daxatva
+    ctx.stroke();
+  }
+}
+
+
+
+// mtvaris daxatvis funqcia
+function drawMoon(
+
+  // x koordinata
+  x,
+
+  // y koordinata
+  y,
+
+  // mtvaris radiusi
+  moonRadius = 50,
+
+  // mtvaris feri
+  moonColor = "#f5f3ce"
+) {
+
+  // axali pathis dawyeba
+  ctx.beginPath();
+
+  // mtvaris wris daxatva
+  ctx.arc(
+    x,
+    y,
+    moonRadius,
+    0,
+    Math.PI * 2
+  );
+
+  // mtvaris feri
+  ctx.fillStyle = moonColor;
+
+  // mtvaris shevseba
   ctx.fill();
 }
 
 
-// HOUSE FUNCTION
-function drawHouse(x0, y0, width, height) { // saxlis daxatvis funqcia
 
-  // walls
-  ctx.fillStyle = "#fff704"; // kedlebis feri
-  ctx.fillRect(x0, y0, width, height); // saxlis kedlebi
+// saxlis daxatvis funqcia
+function drawHouse(
 
-  // roof
-  ctx.beginPath(); // saxuravis dawyeba
-  ctx.moveTo(x0 - 1, y0); //marcxena kutxe
-  ctx.lineTo(x0 + width / 2, y0 - height / 2); // saxuravis wveri
-  ctx.lineTo(x0 + width + 1, y0); // marjvena kutx
-  ctx.closePath(); // figuris daxurva
-  ctx.fillStyle = "red"; // saxuravis feri
-  ctx.fill(); // shevseba
+  // x koordinata
+  x0,
 
-  // door
-  ctx.fillStyle = "#654321"; // karis feri
-  ctx.fillRect(x0 + width * 0.45, y0 + height * 0.55, width * 0.2, height * 0.45); // door
+  // y koordinata
+  y0,
 
-  // handle
-  ctx.beginPath(); // saxeluriswre
-  ctx.arc(x0 + width * 0.48, y0 + height * 0.75, 5, 0, Math.PI * 2); // saxeluri
-  ctx.fillStyle = "white"; // saxeluris feri
-  ctx.fill(); // shevseba
+  // sigane
+  width,
 
-  // window
-  ctx.fillStyle = "#fff"; // fanjris feri
-  ctx.fillRect(x0 + width * 0.1, y0 + height * 0.3, width * 0.2, height * 0.25); // fanjara
+  // simagle
+  height
+) {
 
-  ctx.strokeStyle = "black"; // charchos feri
-  ctx.strokeRect(x0 + width * 0.1, y0 + height * 0.3, width * 0.2, height * 0.25); //fanjris charcho
+  // kedlebis feri
+  ctx.fillStyle = "#fff704";
 
-  // fanjris xazebi
-  ctx.beginPath(); // fanjris xazebis dawyeba
+  // kedlebis daxatva
+  ctx.fillRect(
+    x0,
+    y0,
+    width,
+    height
+  );
 
-  ctx.moveTo(x0 + width * 0.2, y0 + height * 0.3); // zeda vertikaluri xazi
-  ctx.lineTo(x0 + width * 0.2, y0 + height * 0.55); // qveda vertikaluri xazi
 
-  ctx.moveTo(x0 + width * 0.1, y0 + height * 0.425); // horizontaluri xazi marcxnidan
-  ctx.lineTo(x0 + width * 0.3, y0 + height * 0.425); // horizontaluri xazi marjvnidan
+  // saxuravis pathis dawyeba
+  ctx.beginPath();
 
-  ctx.stroke(); // xazebi
+  // marcxena wertili
+  ctx.moveTo(
+    x0,
+    y0
+  );
+
+  // zeda wertili
+  ctx.lineTo(
+    x0 + width / 2,
+    y0 - height * 0.5
+  );
+
+  // marjvena wertili
+  ctx.lineTo(
+    x0 + width,
+    y0
+  );
+
+  // pathis daxurva
+  ctx.closePath();
+
+  // saxuravis feri
+  ctx.fillStyle = "red";
+
+  // saxuravis shevseba
+  ctx.fill();
+
+
+  // karis feri
+  ctx.fillStyle = "#654321";
+
+  // karis daxatva
+  ctx.fillRect(
+    x0 + width * 0.45,
+    y0 + height * 0.55,
+    width * 0.2,
+    height * 0.45
+  );
+
+
+  // saxeluris dawyeba
+  ctx.beginPath();
+
+  // saxeluris wris daxatva
+  ctx.arc(
+    x0 + width * 0.48,
+    y0 + height * 0.75,
+    5,
+    0,
+    Math.PI * 2
+  );
+
+  // saxeluris feri
+  ctx.fillStyle = "white";
+
+  // saxeluris shevseba
+  ctx.fill();
+
+
+  // fanjris feri
+  ctx.fillStyle = "white";
+
+  // fanjris daxatva
+  ctx.fillRect(
+    x0 + width * 0.1,
+    y0 + height * 0.3,
+    width * 0.2,
+    height * 0.25
+  );
+
+
+  // fanjris charchos feri
+  ctx.strokeStyle = "black";
+
+  // fanjris charchos daxatva
+  ctx.strokeRect(
+    x0 + width * 0.1,
+    y0 + height * 0.3,
+    width * 0.2,
+    height * 0.25
+  );
+
+
+  // fanjris xazebis dawyeba
+  ctx.beginPath();
+
+  // vertikaluri xazi
+  ctx.moveTo(
+    x0 + width * 0.2,
+    y0 + height * 0.3
+  );
+
+  ctx.lineTo(
+    x0 + width * 0.2,
+    y0 + height * 0.55
+  );
+
+
+  // horizontaluri xazi
+  ctx.moveTo(
+    x0 + width * 0.1,
+    y0 + height * 0.425
+  );
+
+  ctx.lineTo(
+    x0 + width * 0.3,
+    y0 + height * 0.425
+  );
+
+  // xazebis daxatva
+  ctx.stroke();
 }
 
-// draw everything
+
+
+// mtliani scenis daxatva
 function drawScene() {
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // canvasis gasuftaveba
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
-  drawBackground(); // foni
 
-  // day
+  // fonis daxatva
+  drawBackground();
+
+
+  // tu dila aris
   if (isNight == false) {
-    drawSun(700, 80); // mzis daxatva
+
+    // pirveli mze
+    drawSun({
+      ...sunObj,
+
+      x: 700,
+      y: 80
+    });
+
+
+    // meore mze
+    drawSun({
+      ...sunObj,
+
+      x: 100,
+      y: 80
+    });
   }
 
-  // night
+
+  // tu game aris
   else {
-    drawMoon(700, 80); // mtvaris daxatva
+
+    // mtvaris daxatva
+    drawMoon(
+      700,
+      80
+    );
   }
 
-  drawHouse(50, 200, 200, 180); // pirveli house
-  drawHouse(300, 210, 160, 170); // meore house
-  drawHouse(560, 180, 200, 200); // mesame
+
+  // pirveli saxli
+  drawHouse(
+    50,
+    200,
+    200,
+    180
+  );
+
+
+  // meore saxli
+  drawHouse(
+    300,
+    210,
+    160,
+    170
+  );
+
+
+  // mesame saxli
+  drawHouse(
+    560,
+    180,
+    200,
+    200
+  );
 }
 
 
-// button function
-function toggleDayNight() { // dila-gamis gadartva
 
+// dila-gamis gadartvis funqcia
+function toggleDayNight() {
+
+  // mdgomareobis shecvala
   isNight = !isNight;
 
+  // scenis xelaxla daxatva
   drawScene();
 }
 
 
-// first draw
+
+// pirveli gachveneba
 drawScene();
